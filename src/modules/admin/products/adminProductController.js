@@ -14,17 +14,23 @@ export const listProducts = async (req, res) => {
 export const getProduct = async (req, res) => {
   try {
     const product = await productService.getProductById(req.params.id);
+    if (!product) return res.status(404).json({ success: false, message: "محصول یافت نشد" });
     res.json({ success: true, data: product });
   } catch (error) {
     res.status(500).json({ success: false, message: "خطا در دریافت محصول", details: error.message });
   }
 };
 
+// 📌 ایجاد محصول جدید
 export const createProduct = async (req, res) => {
   try {
     const files = (req.files || []).filter(f => f.originalname && f.buffer);
 
-    const fields = req.body.fields ? JSON.parse(req.body.fields) : [];
+    let fields = [];
+    try { fields = req.body.fields ? JSON.parse(req.body.fields) : []; } catch { fields = []; }
+
+    let labels = [];
+    try { labels = req.body.labels ? JSON.parse(req.body.labels) : []; } catch { labels = []; }
 
     const productData = {
       name: req.body.name,
@@ -36,12 +42,12 @@ export const createProduct = async (req, res) => {
       discount: req.body.discount ? parseFloat(req.body.discount) : 0,
       discountType: req.body.discountType || "amount",
       fields,
+      labels, // اضافه شد
     };
 
-    // ارسال فایل‌های اصلی به سرویس (نه نتیجه آپلود)
     const product = await productService.createProduct(productData, files);
 
-    res.status(201).json({ success: true, data: product });
+    res.status(201).json({ success: true, data: product, message: "محصول با موفقیت ایجاد شد" });
   } catch (error) {
     console.error("Error creating product:", error);
     res.status(500).json({ success: false, message: "خطا در ایجاد محصول", details: error.message });
@@ -53,7 +59,11 @@ export const updateProduct = async (req, res) => {
   try {
     const files = (req.files || []).filter(file => file?.originalname && file?.buffer);
 
-    const fields = req.body.fields ? JSON.parse(req.body.fields) : null;
+    let fields = null;
+    try { fields = req.body.fields ? JSON.parse(req.body.fields) : null; } catch { fields = null; }
+
+    let labels = null;
+    try { labels = req.body.labels ? JSON.parse(req.body.labels) : null; } catch { labels = null; }
 
     const productData = {
       name: req.body.name,
@@ -67,12 +77,12 @@ export const updateProduct = async (req, res) => {
       discount: req.body.discount ? parseFloat(req.body.discount) : undefined,
       discountType: req.body.discountType,
       fields,
+      labels, // اضافه شد
     };
 
-    // ارسال فایل‌های اصلی به سرویس (نه نتیجه آپلود)
     const product = await productService.updateProduct(req.params.id, productData, files);
 
-    res.json({ success: true, data: product });
+    res.json({ success: true, data: product, message: "محصول با موفقیت بروزرسانی شد" });
   } catch (error) {
     console.error("Error updating product:", error);
     res.status(500).json({ success: false, message: "خطا در بروزرسانی محصول", details: error.message });
@@ -83,8 +93,9 @@ export const updateProduct = async (req, res) => {
 export const deleteProduct = async (req, res) => {
   try {
     await productService.deleteProduct(req.params.id);
-    res.status(204).json({ success: true });
+    res.status(200).json({ success: true, message: "محصول با موفقیت حذف شد" });
   } catch (error) {
+    console.error("Error deleting product:", error);
     res.status(500).json({ success: false, message: "خطا در حذف محصول", details: error.message });
   }
 };

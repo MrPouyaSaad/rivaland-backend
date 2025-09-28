@@ -1,5 +1,5 @@
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import prisma from "../../../../prisma/prisma.js";
+
 
 /**
  * لیست کاربران با فیلتر و جستجو

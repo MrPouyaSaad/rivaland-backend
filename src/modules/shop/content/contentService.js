@@ -1,6 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import prisma from "../../../../prisma/prisma.js";
 
 // ----------------------------
 // 📌 Get small banners (header)
@@ -36,5 +34,31 @@ export async function getSliderBanners() {
   } catch (error) {
     console.error("Error fetching slider banners:", error.message);
     throw new Error("خطا در دریافت بنرهای بزرگ");
+  }
+}
+
+// ----------------------------
+// 📌 Get product banners (for category/product sections)
+// ----------------------------
+export async function getProductBanners() {
+  console.log("Fetching product banners...");
+  try {
+    const banners = await prisma.productBanner.findMany({
+      where: { isActive: true },
+      include: {
+        categories: { select: { id: true, name: true } }, // اگر بخوای دسته‌بندی رو هم بفرستی
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    console.log(`Fetched ${banners.length} product banners`);
+    return banners.map((b) => ({
+      id: b.id,
+      image: b.image,
+      categories: b.categories?.map((c) => ({ id: c.id, name: c.name })) || [],
+    }));
+  } catch (error) {
+    console.error("Error fetching product banners:", error.message);
+    throw new Error("خطا در دریافت بنرهای محصولات");
   }
 }

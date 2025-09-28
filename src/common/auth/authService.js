@@ -1,9 +1,10 @@
 import { generateToken } from "../utils/jwt.js";
-import { PrismaClient } from "@prisma/client";
+import prisma from "../../../prisma/prisma.js";
+
 import { MessageService } from "../messaging/messageService.js";
 
 
-const prisma = new PrismaClient();
+
 
 export async function login(username, password) {
   // ورود ادمین

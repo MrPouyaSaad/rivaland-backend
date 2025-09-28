@@ -1,5 +1,5 @@
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import prisma from "../../../../prisma/prisma.js";
+
 
 // لیست سفارش‌ها با فیلتر + جستجو + پیجینیشن
 export async function getAllOrders({ page = 1, limit = 10, status, search }) {

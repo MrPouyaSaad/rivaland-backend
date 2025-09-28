@@ -9,4 +9,6 @@ router.get("/small", contentController.getSmallBannersHandler);
 // 📌 بنرهای بزرگ برای بادی
 router.get("/slider", contentController.getSliderBannersHandler);
 
+router.get("/product-banners", contentController.getProductBannersHandler);
+
 export default router;
