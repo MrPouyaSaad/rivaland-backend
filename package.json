@@ -8,6 +8,12 @@
     "start": "node server.js",
     "postinstall": "npx prisma generate"
   },
+
+  
+  "prisma": {
+    "schema": "./prisma"
+  },
+
   "dependencies": {
     "@aws-sdk/client-s3": "^3.887.0",
     "@aws-sdk/s3-request-presigner": "^3.891.0",
