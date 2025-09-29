@@ -22,28 +22,27 @@ model Product {
   image        String?
   images       ProductImage[]
   labels       ProductLabelRelation[]
-  cartItems    CartItem[]  // ← Added this
-  // Relations
+  cartItems    CartItem[]
   category     Category?          @relation(fields: [categoryId], references: [id])
   orderItems   OrderItem[]
-  attributes   ProductFieldValue[]   // ⬅️ مقادیر فیلدهای داینامیک
+  attributes   ProductFieldValue[]
 }
 
 model ProductImage {
-  id       Int     @id @default(autoincrement())
-  product  Product @relation(fields: [productId], references: [id])
+  id        Int     @id @default(autoincrement())
+  product   Product @relation(fields: [productId], references: [id])
   productId Int
-  url      String
-  key      String?   // ← اضافه شد
-  isMain   Boolean   @default(false)
+  url       String
+  key       String?
+  isMain    Boolean @default(false)
 }
 
 model Category {
   id        Int             @id @default(autoincrement())
   name      String
-   description String?
+  description String?
   image     String?
-  imageKey    String?
+  imageKey  String?
   fields    CategoryField[]
   products  Product[]
   productBanners ProductBanner[] @relation("BannerCategories")
@@ -54,45 +53,43 @@ model Category {
 model CategoryField {
   id         Int      @id @default(autoincrement())
   name       String
-  type       String   // string, number, boolean, select, multi-select
-  options    String?  // JSON string (["قرمز","آبی"]) — فقط برای select و multi-select
+  type       String
+  options    String?
   required   Boolean  @default(true)
   categoryId Int
   category   Category @relation(fields: [categoryId], references: [id])
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-
-  productValues ProductFieldValue[]   // ⬅️ مقادیر فیلدها
+  productValues ProductFieldValue[]
 }
 
 enum OrderStatus {
-  pending
   paid
+  processing
   shipped
   delivered
   cancelled
+  returned
 }
 
 model Order {
   id         Int          @id @default(autoincrement())
   userId     Int
-  status     OrderStatus  @default(pending)
+  status     OrderStatus  @default(paid)
   total      Float
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
 
-  // ✅ پرداخت
-  paymentMethod String?    // روش پرداخت: card, cash, etc
-  paymentStatus String?    @default("unpaid") // unpaid, paid, failed
+  paymentMethod String?
+  paymentStatus String?    @default("unpaid")
   paidAt        DateTime?
 
-  // ✅ ارسال
   shippingMethod       String?
   shippingCost         Float?   @default(0)
   shippingTrackingCode String?
 
   items      OrderItem[]
-  user       User      @relation(fields: [userId], references: [id])
+  user       User @relation(fields: [userId], references: [id])
 }
 
 model OrderItem {
@@ -111,7 +108,7 @@ model User {
   username  String?   @unique
   email     String?   @unique
   password  String?
-  role      String   @default("user") // user, admin
+  role      String   @default("user")
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -127,10 +124,10 @@ model LoginCode {
 
 model Content {
   id        Int      @id @default(autoincrement())
-  type      String   // slider, mini_banner, ...
+  type      String
   title     String?
-  link      String?  // وقتی بنر کلیک میشه به کجا بره
-  image     String   // آدرس CDN
+  link      String?
+  image     String
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -152,16 +149,16 @@ model ProductFieldValue {
   productId Int
   field     CategoryField  @relation(fields: [fieldId], references: [id])
   fieldId   Int
-  value     String         // مقدار انتخاب شده توسط کاربر
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Label {
   id       Int      @id @default(autoincrement())
   name     String   @unique
-  title    String   // مثلا "پر فروش" یا "پیشنهادی" برای نمایش به کاربر
-  color    String?  // می‌توان برای نمایش frontend یک رنگ هم ذخیره کرد
+  title    String
+  color    String?
   products ProductLabelRelation[]
 }
 
@@ -185,14 +182,14 @@ model CartItem {
 
   product   Product  @relation(fields: [productId], references: [id])
 
-  @@unique([userId, productId]) // یک محصول یکبار در سبد هر کاربر
+  @@unique([userId, productId])
 }
 
 model ProductBanner {
   id           Int      @id @default(autoincrement())
   image        String
   isActive     Boolean  @default(true)
-  categories   Category[] @relation("BannerCategories")  // ← Fixed this
+  categories   Category[] @relation("BannerCategories")
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }

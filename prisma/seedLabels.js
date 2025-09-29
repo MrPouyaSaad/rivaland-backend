@@ -13,7 +13,7 @@ async function main() {
     { name: "special", title: "ویژه", color: "#FF6347" },
     { name: "seasonal", title: "مناسب فصل", color: "#20B2AA" },
     { name: "featured", title: "محصول منتخب", color: "#FF8C00" },
-    { name: "fast-selling", title: "سریع فروش", color: "#DC143C" }
+    // { name: "fast-selling", title: "", color: "#DC143C" }
   ];
 
   for (const label of labels) {
